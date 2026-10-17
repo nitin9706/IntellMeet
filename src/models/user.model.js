@@ -4,12 +4,22 @@ import validator from "validator";
 
 const userSchema = new mongoose.Schema(
   {
-    name: {
+    username: {
       type: String,
-      required: [true, "Name is required"],
+      required: [true, "Username is required"],
+      unique: true,
       trim: true,
-      minlength: [2, "Name must be at least 2 characters"],
-      maxlength: [50, "Name cannot exceed 50 characters"],
+      lowercase: true,
+      minlength: [3, "Username must be at least 3 characters"],
+      maxlength: [30, "Username cannot exceed 30 characters"],
+    },
+
+    fullname: {
+      type: String,
+      required: [true, "Full name is required"],
+      trim: true,
+      minlength: [2, "Full name must be at least 2 characters"],
+      maxlength: [50, "Full name cannot exceed 50 characters"],
     },
 
     email: {
@@ -37,12 +47,30 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+
+    refreshToken: {
+      type: String,
+      default: "",
+    },
+
+    name: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
+    status: {
+      type: String,
+      enum: ["active", "suspended"],
+      default: "active",
+    },
   },
   {
     timestamps: true,
     toJSON: {
       transform(_doc, ret) {
         delete ret.password;
+        delete ret.refreshToken;
         delete ret.__v;
         return ret;
       },
@@ -50,15 +78,16 @@ const userSchema = new mongoose.Schema(
   },
 );
 
-// Hash passwords before saving a new password.
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
-
   this.password = await bcrypt.hash(this.password, 12);
 });
 
-// Compare a login password with the saved hash.
 userSchema.methods.comparePassword = async function (candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
+
+userSchema.methods.isPasswordCorrect = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 

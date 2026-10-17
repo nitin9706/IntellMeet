@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
 import meetingRouter from "./routes/meeting.route.js";
 import meetingInvitationRouter from "./routes/meetingInvitation.route.js";
+import userRouter from "./routes/user.route.js";
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use(
   }),
 );
 
+app.use("/api/users", userRouter);
 app.use("/api/meetings", meetingRouter);
 app.use("/api/meetings", meetingInvitationRouter);
 
