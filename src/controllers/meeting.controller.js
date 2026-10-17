@@ -21,6 +21,7 @@ const createMeeting = asyncHandler(async (req, res) => {
     meetingData: {
       roomName: body.roomName,
       title: body.title,
+      title: body.title,
       description: body.description,
       scheduledStartAt: body.scheduledStartAt,
       settings: body.settings,
