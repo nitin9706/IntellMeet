@@ -4,6 +4,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
+import meetingRouter from "./routes/meeting.route.js";
 
 const app = express();
 
@@ -28,6 +29,8 @@ app.use(
     limit: 100,
   }),
 );
+
+app.use("/api/meetings", meetingRouter);
 
 app.get("/api/health", (req, res) => {
   res.status(200).json({
